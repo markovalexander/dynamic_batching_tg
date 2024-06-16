@@ -14,5 +14,15 @@ harness = true
 required-features = []
 
 [dependencies]
-tokio = "1.38.0"
+anyhow = "1.0.86"
+clap = { version = "4.5.7", features = ["derive", "env"] }
+tokio = { version = "1.38.0", features = ["full", "tracing", "net", "rt", "rt-multi-thread", "macros"] }
 tonic = "0.11.0"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+tonic-reflection = "0.11.0"
+prost = "0.12.3"
+
+[build-dependencies]
+tonic-build = { version = "0.11.0", features = ["prost"] }
+prost-build = "0.12.6"
