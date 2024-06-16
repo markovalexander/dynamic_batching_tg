@@ -27,9 +27,9 @@ message ReplyRequest {
 }
 
 message Response {
-  // Request id
+  // Request id.
   uint64 request_id = 1;
-  // Response message
+  // Response message.
   string message = 2;
 }
 
