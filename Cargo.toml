@@ -1,0 +1,20 @@
+[workspace]
+members = [
+    "launcher",
+    "telegram_bot",
+    "server", "router",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.0.1"
+authors = ["Alexander Markov"]
+
+[profile.release]
+debug = 1
+lto = "off"
+panic = "abort"
+incremental = true
+

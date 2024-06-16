@@ -1,0 +1,7 @@
+[package]
+name = "router"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+
+[dependencies]

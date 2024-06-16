@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package reply.v1;
+
+service ReplyService {
+  rpc Reply (ReplyRequest) returns (ReplyResponse) {}
+}
+
+message Request {
+  // Request id
+  uint64 id = 1;
+  // Request message
+  string message = 2;
+}
+
+message Batch {
+  // Batch id.
+  uint64 id = 1;
+  // Requests.
+  repeated Request requests = 2;
+  // Size of the batch.
+  uint32  size = 3;
+}
+
+message ReplyRequest {
+  Batch batch = 1;
+}
+
+message Response {
+  // Request id
+  uint64 request_id = 1;
+  // Response message
+  string message = 2;
+}
+
+message ReplyResponse {
+  /// Decodes
+  repeated Response responses = 1;
+  /// Elapsed time in nanoseconds
+  float elapsed = 2;
+}
