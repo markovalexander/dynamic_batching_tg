@@ -78,7 +78,12 @@ impl Args {
                 "--grpc-address".to_string(),
                 format!("127.0.0.1:{}", self.grpc_port),
             ],
-            _ => vec![],
+            ProgramName::TGBot => vec![
+                "--reply-server-address".to_string(),
+                format!("{}:{}", self.reply_server_address, self.reply_server_port),
+                "--tg-token".to_string(),
+                self.tg_token.clone(),
+            ],
         }
     }
 }
@@ -99,18 +104,19 @@ fn main() -> Result<(), LauncherError> {
     })
     .expect("Error setting Ctrl-C handler");
 
-    let mut grpc_server =
-        spawn_function(&args, "grpc_server").expect("Failed to start grpc_server");
+    let grpc_server = spawn_program(&args, "grpc_server").expect("Failed to start grpc_server");
 
     sleep(Duration::from_millis(100));
-    let router = spawn_function(&args, "router").expect("Failed to start router");
+    let router = spawn_program(&args, "router").expect("Failed to start router");
+
+    let mut tg_bot = spawn_program(&args, "telegram_bot").expect("Failed to start telegram_bot");
 
     tracing::info!("Everything is up and running. Press Ctrl-C to terminate the application.");
 
     while running.load(Ordering::SeqCst) {
-        match grpc_server.try_wait().unwrap() {
+        match tg_bot.try_wait().unwrap() {
             Some(_) => {
-                tracing::error!("grpc_server has died, shutting down");
+                tracing::error!("TG bot has died, shutting down");
                 return Err(LauncherError::ServerError);
             }
             None => sleep(Duration::from_millis(100)),
@@ -120,11 +126,13 @@ fn main() -> Result<(), LauncherError> {
     terminate("grpc_server", grpc_server, Duration::from_millis(100))
         .expect("Failed to terminate grpc_server");
     terminate("router", router, Duration::from_millis(100)).expect("Failed to terminate router");
+    terminate("telegram_bot", tg_bot, Duration::from_millis(100))
+        .expect("Failed to terminate telegram_bot");
 
     Ok(())
 }
 
-fn spawn_function(args: &Args, program_name: &str) -> Result<Child, LauncherError> {
+fn spawn_program(args: &Args, program_name: &str) -> Result<Child, LauncherError> {
     tracing::info!("Spawning {}", program_name);
 
     let program_type = ProgramName::from_str(program_name).unwrap();

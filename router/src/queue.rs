@@ -1,7 +1,7 @@
 use crate::{TextReplyRequest, TextReplyResponse};
 use reply_client::{ClientBatch, HttpRequest};
 use std::collections::{HashMap, VecDeque};
-use std::time::{Instant};
+use std::time::Instant;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{instrument, Span};
 
@@ -120,7 +120,6 @@ impl QueueState {
         Some((batch_entries, batch, Span::current()))
     }
 }
-
 
 async fn queue_task(mut queue_receiver: mpsc::UnboundedReceiver<QueueCommand>) {
     let mut state = QueueState::new();
