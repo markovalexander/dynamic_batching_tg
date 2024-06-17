@@ -63,6 +63,7 @@ struct Args {
     reply_server_address: String,
     reply_server_port: u16,
     grpc_port: u16,
+    #[clap(long, short, env = "TG_TOKEN")]
     tg_token: String,
     #[clap(long, short, default_value = "false")]
     debug: bool,
