@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.86"
+clap = { version = "4.5.7", features = ["derive"] }
+nix = { version = "0.29.0", features = ["process", "signal"] }
+tracing-subscriber = "0.3.18"
+tracing = "0.1.40"
+ctrlc = "3.4.2"

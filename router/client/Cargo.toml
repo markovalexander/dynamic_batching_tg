@@ -1,0 +1,15 @@
+[package]
+name = "reply-client"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+
+
+[dependencies]
+prost = "0.12.3"
+anyhow = "1.0.86"
+tonic = { version = "0.11.0", features = [] }
+
+[build-dependencies]
+prost-build = "0.12.6"
+tonic-build = "0.11.0"

@@ -7,3 +7,5 @@
 
 #/target
 /server/src/pb/
+*.http
+/router/client/src/pb/

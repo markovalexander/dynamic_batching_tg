@@ -3,6 +3,7 @@ members = [
     "launcher",
     "telegram_bot",
     "server", "router",
+    "router/client"
 ]
 
 resolver = "2"
