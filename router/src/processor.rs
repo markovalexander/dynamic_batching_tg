@@ -6,9 +6,8 @@ use reply_client::Client;
 
 use anyhow::Result;
 use std::sync::Arc;
-use std::time::Instant;
 use tokio::sync::{mpsc, Notify};
-use tracing::{instrument, Span};
+use tracing::instrument;
 
 struct Shared {
     batching_task: Notify,
@@ -40,10 +39,6 @@ impl Processor {
         self.queue.append(QueueEntry {
             request,
             response_tx,
-            span: Span::current(),
-            temp_span: None,
-            queue_time: Instant::now(),
-            batch_time: None,
         });
         self.shared.batching_task.notify_one();
         Ok(response_rx)

@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
+use std::env;
 
 use nix::sys::signal::{self, Signal};
 use nix::unistd::Pid;
@@ -41,20 +42,16 @@ impl ProgramName {
         }
     }
 
-    fn get_executable(&self, debug: bool) -> String {
+    fn get_executable(&self, prefix: &str) -> String {
         let executable_name = match self {
             ProgramName::TGBot => "telegram_bot",
             ProgramName::GrpcServer => "server",
             ProgramName::Router => "router",
         };
 
-        if debug {
-            tracing::warn!("Running in debug mode, remove before pushing");
-            let prefix = "/Users/amarkov/Documents/Projects/rust/batching_service/target/debug/";
-            format!("{}{}", prefix, executable_name)
-        } else {
-            executable_name.to_string()
-        }
+        let executable_path = format!("{}/{}", prefix, executable_name);
+        tracing::info!("Executable path: {}", &executable_path);
+        executable_path
     }
 }
 
@@ -135,11 +132,17 @@ fn main() -> Result<(), LauncherError> {
 
 fn spawn_program(args: &Args, program_name: &str) -> Result<Child, LauncherError> {
     tracing::info!("Spawning {}", program_name);
-
     let program_type = ProgramName::from_str(program_name).unwrap();
+
+    let mut prefix = env::current_exe().map_err(|e| {
+        eprintln!("Failed to get executable path: {}", e);
+        return program_type.get_error();
+    })?;
+    prefix = prefix.parent().unwrap().to_path_buf();
+
     let program_args = args.get_arguments(&program_type);
 
-    let child = Command::new(program_type.get_executable(args.debug))
+    let child = Command::new(program_type.get_executable(prefix.to_str().unwrap()))
         .args(program_args)
         .spawn()
         .map_err(|_| program_type.get_error())?;

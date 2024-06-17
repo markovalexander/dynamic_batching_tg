@@ -14,8 +14,18 @@ version = "0.0.1"
 authors = ["Alexander Markov"]
 
 [profile.release]
-debug = 1
-lto = "off"
-panic = "abort"
 incremental = true
 
+[profile.release-binary]
+inherits = "release"
+debug = 1
+incremental = true
+panic = "abort"
+
+[profile.release-opt]
+inherits = "release"
+debug = 0
+incremental = false
+lto = "fat"
+opt-level = 3
+codegen-units = 1

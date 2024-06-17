@@ -1,7 +1,6 @@
 use crate::{TextReplyRequest, TextReplyResponse};
 use reply_client::{ClientBatch, HttpRequest};
 use std::collections::{HashMap, VecDeque};
-use std::time::Instant;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{instrument, Span};
 
@@ -10,14 +9,6 @@ pub(crate) struct QueueEntry {
     pub request: TextReplyRequest,
     /// Response sender to communicate between the Infer struct and the batching_task
     pub response_tx: mpsc::UnboundedSender<TextReplyResponse>,
-    /// Span that will live as long as entry
-    pub span: Span,
-    /// Temporary span used as a guard when logging inference, wait times...
-    pub temp_span: Option<Span>,
-    /// Instant when this entry was queued
-    pub queue_time: Instant,
-    /// Instant when this entry was added to a batch
-    pub batch_time: Option<Instant>,
 }
 
 #[derive(Debug)]
@@ -131,7 +122,7 @@ async fn queue_task(mut queue_receiver: mpsc::UnboundedReceiver<QueueCommand>) {
             }
             QueueCommand::NextBatch {
                 response_sender,
-                span,
+                span: _,
             } => {
                 let batch = state.next_batch().await;
                 response_sender.send(batch).unwrap();
